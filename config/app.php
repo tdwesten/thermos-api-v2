@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', 'Thermos Api'),
 
     /*
     |--------------------------------------------------------------------------
@@ -208,8 +208,10 @@ return [
     |
     */
 
-    'aliases' => Facade::defaultAliases()->merge([
+    'aliases' => Facade::defaultAliases()->merge(
+        [
         // 'ExampleClass' => App\Example\ExampleClass::class,
-    ])->toArray(),
+        ]
+    )->toArray(),
 
 ];

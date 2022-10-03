@@ -10,7 +10,9 @@
         "laravel-json-api/laravel": "^2.4",
         "laravel/framework": "^9.19",
         "laravel/sanctum": "^3.0",
-        "laravel/tinker": "^2.7"
+        "laravel/tinker": "^2.7",
+        "php-open-source-saver/jwt-auth": "^2.0",
+        "stayallive/laravel-eloquent-uuid": "^1.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
