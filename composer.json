@@ -6,12 +6,14 @@
     "license": "MIT",
     "require": {
         "php": "^8.0.2",
+        "fruitcake/laravel-cors": "^3.0",
         "guzzlehttp/guzzle": "^7.2",
         "laravel-json-api/laravel": "^2.4",
         "laravel/framework": "^9.19",
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
         "php-open-source-saver/jwt-auth": "^2.0",
+        "squizlabs/php_codesniffer": "^3.7",
         "stayallive/laravel-eloquent-uuid": "^1.0"
     },
     "require-dev": {

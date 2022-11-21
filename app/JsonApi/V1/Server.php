@@ -2,6 +2,9 @@
 
 namespace App\JsonApi\V1;
 
+use App\JsonApi\V1\Programs\ProgramSchema;
+use Illuminate\Support\Facades\Auth;
+use App\JsonApi\V1\Thermostats\ThermostatSchema;
 use LaravelJsonApi\Core\Server\Server as BaseServer;
 
 class Server extends BaseServer
@@ -21,7 +24,7 @@ class Server extends BaseServer
      */
     public function serving(): void
     {
-        // no-op
+        Auth::shouldUse('api');
     }
 
     /**
@@ -32,7 +35,8 @@ class Server extends BaseServer
     protected function allSchemas(): array
     {
         return [
-            Users\UserSchema::class,
+            ThermostatSchema::class,
+            ProgramSchema::class
         ];
     }
 }

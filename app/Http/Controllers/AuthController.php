@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Thermostat;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Auth\Events\Registered;
 
 class AuthController extends Controller
@@ -16,9 +18,10 @@ class AuthController extends Controller
     public function __construct()
     {
         $this->middleware(
-            'auth:api', [
+            'auth:api',
+            [
             'except' => [
-                    'login', 'refresh', 'register', 'verifyEmail', 'verify.email'
+                    'login', 'refresh', 'register', 'verifyEmail', 'verify.email', 'thermostats.sync'
                 ]
             ]
         );
@@ -77,18 +80,29 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function register()
+    public function register(Request $request)
     {
-        $user = User::create(
-            request(['first_name', 'last_name', 'email', 'password'])
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|unique:thermostats|max:255',
+            'password' => 'required',
+            'name' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 401);
+        }
+
+
+        $thermostat = Thermostat::create(
+            request(['name', 'email', 'password'])
         );
 
-        event(new Registered($user));
+        event(new Registered($thermostat));
 
-        return $this->login($user);
+        return $this->login($thermostat);
     }
 
-    /**
+    /**`
      * Get the token array structure.
      *
      * @param string $token Token
@@ -101,8 +115,8 @@ class AuthController extends Controller
             [
                 'access_token' => $token,
                 'token_type' => 'bearer',
-                'user_id' => auth()->user()->id,
-                'expires_in' => auth()->factory()->getTTL() * 600
+                'thermostat_id' => auth()->user()->id,
+                'expires_in' => auth()->factory()->getTTL() * 6000
             ]
         );
     }
