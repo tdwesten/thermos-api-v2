@@ -9,23 +9,6 @@ class ThermostatQuery extends ResourceQuery
 {
 
     /**
-     * Authorize the request.
-     *
-     * @return bool|null
-     */
-    public function authorize(): ?bool
-    {
-        if ($this->is('*-actions/sync')) {
-            return (bool) optional($this->user())->can(
-                'update',
-                $this->model()
-            );
-        }
-
-        return null;
-    }
-
-    /**
      * Get the validation rules that apply to the request query parameters.
      *
      * @return array

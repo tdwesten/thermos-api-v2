@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Thermostat;
 use Illuminate\Http\Request;
 use App\Services\UpdateService;
+use LaravelJsonApi\Core\Document\Error;
 use Illuminate\Support\Facades\Validator;
 use LaravelJsonApi\Core\Responses\DataResponse;
+use LaravelJsonApi\Core\Responses\ErrorResponse;
 use LaravelJsonApi\Laravel\Http\Controllers\JsonApiController;
 
 class ThermostatController extends JsonApiController
@@ -18,11 +21,8 @@ class ThermostatController extends JsonApiController
     public function __construct()
     {
         $this->middleware(
-            'auth:api'
-        )->except(
-            [
-                'v1.thermostats.thermostats.sync',
-            ]
+            'auth:api',
+            ['except' => ['sync']]
         );
     }
 
@@ -30,23 +30,44 @@ class ThermostatController extends JsonApiController
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function sync(Request $request): DataResponse
+    public function sync(Request $request): DataResponse | ErrorResponse
     {
+
+        $token = $request->header('token');
+
+        $validator = Validator::make(['token' => $token ], [
+            'token' => 'exists:App\Models\Thermostat,token',
+        ]);
+
+
+        if ($validator->fails()) {
+            $error = $validator->errors()->first();
+
+            return ErrorResponse::error([
+                'title' => 'Invalid token',
+                'detail' => $error,
+                'status' => '400',
+            ]);
+        }
+
+        $thermostat = Thermostat::where('token', $token)->get()->first();
+
         $validator = Validator::make($request->all(), [
             'current_temperature' => 'required|numeric',
-            'is_heating' => 'required|boolean',
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 401);
+            return ErrorResponse::error([
+                'title' => 'Invalid param',
+                'detail' => $validator->errors()->first(),
+                'status' => '400',
+            ]);
         }
 
-        $thermostat = $request->user();
         $current_temperature = $request->input('current_temperature', 0);
 
         $updateService = new UpdateService();
         $thermostat = $updateService->processUpdate($thermostat, $current_temperature);
-
 
         return new DataResponse(
             $thermostat

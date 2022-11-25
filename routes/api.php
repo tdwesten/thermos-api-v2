@@ -37,7 +37,7 @@ Route::get('/email/verify/{id}/{hash}', [VerifyEmailController::class, '__invoke
     ->name('verification.verify');
 
 // JsonApi
-JsonApiRoute::server('v1')->prefix('v1')->resources(
+JsonApiRoute::server('v1')->prefix('v1')->middleware('api')->resources(
     function ($server) {
         $server->resource('thermostats', ThermostatController::class)
             ->only('index', 'show', 'update')
