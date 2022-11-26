@@ -1,0 +1,52 @@
+name: Deployment
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build-and-deploy:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    environment: production
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: "just-a-placeholder-so-we-dont-get-errors"
+
+      - name: Adding Known Hosts
+        run: ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Composer install
+        run: composer install --prefer-dist --no-ansi --no-interaction --no-progress --quiet
+
+      # - name: Linting
+      #   run: yarn lint --silent
+
+      - name: set .env
+        run: echo "${{ secrets.ENV_VARS }}" > .env
+
+      - name: Deploy with rsync
+        run: rsync -avz --omit-dir-times -r --exclude '.git/' ./ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PATH }}
+      
+      - name: Clear cache
+        run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.SSH_PATH }}; php artisan config:clear; php artisan config:cache"
+
+      - name: Notify
+        run: 'curl -X POST -H "Content-type: application/json" --data "{\"text\":\"New deployment: Shareyourtravel.tips => Frontend => ${{secrets.ENV_NAME}} \"}" ${{secrets.SLACK_WEBHOOK}}'
