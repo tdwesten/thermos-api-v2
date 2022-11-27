@@ -55,7 +55,7 @@ return [
     */
 
     'url' => env('APP_URL', 'http://localhost'),
-
+    'frontend_url' => env('APP_FRONTEND_URL', 'https://shareyourtravel.tips'),
     'asset_url' => env('ASSET_URL'),
 
     /*
