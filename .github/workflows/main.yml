@@ -36,12 +36,6 @@ jobs:
       - name: Composer install
         run: composer install --prefer-dist --no-ansi --no-interaction --no-progress --quiet
 
-      # - name: Linting
-      #   run: yarn lint --silent
-
-      - name: set .env
-        run: echo "${{ secrets.ENV_VARS }}" > .env
-
       - name: Deploy with rsync
         run: rsync -avz --omit-dir-times -r --exclude '.git/' ./ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PATH }}
       
