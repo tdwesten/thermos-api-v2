@@ -13,6 +13,7 @@
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
         "php-open-source-saver/jwt-auth": "^2.0",
+        "sentry/sentry-laravel": "^3.1",
         "squizlabs/php_codesniffer": "^3.7",
         "stayallive/laravel-eloquent-uuid": "^1.0"
     },
