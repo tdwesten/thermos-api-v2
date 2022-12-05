@@ -17,12 +17,17 @@ class Program extends Model
      */
     protected $fillable = [
         'name',
-        'thermostat_id',
         'start_time',
         'end_time',
         'target_temperature',
         'days',
         'is_active',
+        'thermostat_id',
+    ];
+
+
+    protected $casts = [
+        'days' => 'array'
     ];
 
     /**
