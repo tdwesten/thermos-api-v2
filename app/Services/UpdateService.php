@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Program;
 use App\Models\Thermostat;
+use Illuminate\Support\Carbon;
 use App\Services\ThermostatMode;
 
 class UpdateService
@@ -16,7 +17,7 @@ class UpdateService
         $thermostat->current_temperature = $currentTemperature;
 
         // Manual mode
-        if ($thermostat->last_manual_change && $thermostat->last_manual_change->diffInMinutes(now()) < 15) {
+        if ($thermostat->last_manual_change && Carbon::parse($thermostat->last_manual_change)->diffInMinutes(now()) < 15) {
             return $this->useManualMode($thermostat, $currentTemperature);
         }
 
