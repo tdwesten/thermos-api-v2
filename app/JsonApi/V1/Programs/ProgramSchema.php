@@ -4,6 +4,8 @@ namespace App\JsonApi\V1\Programs;
 
 use App\Models\Program;
 use LaravelJsonApi\Eloquent\Contracts\Paginator;
+use LaravelJsonApi\Eloquent\Fields\ArrayHash;
+use LaravelJsonApi\Eloquent\Fields\ArrayList;
 use LaravelJsonApi\Eloquent\Fields\Str;
 use LaravelJsonApi\Eloquent\Fields\Boolean;
 use LaravelJsonApi\Eloquent\Fields\DateTime;
@@ -38,7 +40,7 @@ class ProgramSchema extends Schema
             DateTime::make('start-time')->sortable(),
             DateTime::make('end-time')->sortable(),
             Number::make('target-temperature')->sortable(),
-            Str::make('days')->sortable(),
+            ArrayList::make('days')->sortable(),
             Str::make('name')->sortable(),
             Boolean::make('is-active')->sortable(),
             BelongsTo::make('thermostat')->type('thermostats'),

@@ -39,7 +39,6 @@ class ThermostatController extends JsonApiController
             'token' => 'exists:App\Models\Thermostat,token',
         ]);
 
-
         if ($validator->fails()) {
             $error = $validator->errors()->first();
 
@@ -64,7 +63,7 @@ class ThermostatController extends JsonApiController
             ]);
         }
 
-        $current_temperature = $request->input('current_temperature', 0);
+        $current_temperature = $request->input('current_temperature', 0) * 100;
 
         $updateService = new UpdateService();
         $thermostat = $updateService->processUpdate($thermostat, $current_temperature);
