@@ -25,7 +25,6 @@ class Thermostat extends Authenticatable implements JWTSubject, MustVerifyEmail
         'name',
         'email',
         'password',
-        'target_temperature',
     ];
 
         /**
