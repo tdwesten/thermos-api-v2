@@ -40,7 +40,7 @@ Route::get('/email/verify/{id}/{hash}', [VerifyEmailController::class, '__invoke
 JsonApiRoute::server('v1')->prefix('v1')->middleware('api')->resources(
     function ($server) {
         $server->resource('thermostats', ThermostatController::class)
-            ->only('index', 'show', 'update')
+            ->only('index', 'show', 'update', 'create')
             ->relationships(function ($relations) {
                 $relations->hasOne('current-program');
                 $relations->hasMany('programs');
@@ -55,7 +55,7 @@ JsonApiRoute::server('v1')->prefix('v1')->middleware('api')->resources(
         $server->resource('programs', JsonApiController::class)
             ->only('index', 'show', 'update', 'create', 'delete')
             ->relationships(function ($relations) {
-                $relations->hasOne('thermostat');
+                $relations->hasOne('thermostat')->readOnly();
             });
     }
 );
