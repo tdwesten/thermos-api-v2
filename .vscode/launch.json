@@ -1,15 +1,22 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "Listen for XDebug on Homestead",
-            "type": "php",
-            "request": "launch",
-            "log": true,
-            "pathMappings": {
-                "/home/vagrant/code": "${workspaceFolder}"
-            },
-            "port": 9003
-        }
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Listen for XDebug on Homestead",
+      "type": "php",
+      "request": "launch",
+      "log": true,
+      "pathMappings": {
+        "/home/vagrant/code": "${workspaceFolder}"
+      },
+      "port": 9003
+    },
+    {
+      "name": "Listen for XDebug on valet",
+      "type": "php",
+      "request": "launch",
+      "log": true,
+      "port": 9003
+    }
+  ]
 }
