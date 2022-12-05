@@ -40,7 +40,7 @@ class ThermostatPolicy
      */
     public function create(Thermostat $currentThermostat)
     {
-        //
+        return true;
     }
 
     /**
