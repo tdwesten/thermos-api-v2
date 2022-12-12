@@ -40,6 +40,7 @@ class ThermostatSchema extends Schema
             DateTime::make('last-manual-change')->sortable()->readOnly(),
             Str::make('name'),
             Str::make('email'),
+            Str::make('token'),
             Number::make('current-temperature'),
             Number::make('target-temperature'),
             Number::make('min-temperature'),

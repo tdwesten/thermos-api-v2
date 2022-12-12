@@ -52,7 +52,7 @@ class ThermostatPolicy
      */
     public function update(Thermostat $currentThermostat, Thermostat $thermostat)
     {
-        //
+        return $currentThermostat->id === $thermostat->id;
     }
 
     /**
