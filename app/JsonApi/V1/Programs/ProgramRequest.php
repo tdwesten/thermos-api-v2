@@ -17,10 +17,11 @@ class ProgramRequest extends ResourceRequest
     {
         return [
             'name' => ['required', 'string'],
-            'start-time' => [ 'required', 'date_format:H:i'],
-            'end-time' => [ 'required', 'date_format:H:i'],
+            'start-time' => [ 'required'],
+            'end-time' => [ 'required'],
             'is-active' => ['required', 'boolean'],
             'days' => ['required', 'array'],
+            'target-temperature' => ['required', 'numeric'],
             'thermostat' => JsonApiRule::toOne(),
         ];
     }

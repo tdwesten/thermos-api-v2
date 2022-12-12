@@ -27,7 +27,7 @@ class Thermostat extends Authenticatable implements JWTSubject, MustVerifyEmail
         'password',
     ];
 
-        /**
+    /**
      * The attributes that should be hidden for serialization.
      *
      * @var array<int, string>

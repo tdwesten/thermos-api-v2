@@ -25,9 +25,9 @@ class Program extends Model
         'thermostat_id',
     ];
 
-
     protected $casts = [
-        'days' => 'array'
+        'days' => 'array',
+        'is_active' => 'boolean'
     ];
 
     /**
