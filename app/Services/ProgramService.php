@@ -16,7 +16,7 @@ class ProgramService
      */
     public function getCurrentProgram(Thermostat $thermostat): Program|null
     {
-        $currentDayNumber = now()->dayOfWeek; // 0 = Sunday, 6 = Saturday
+        $currentDayNumber = now()->dayOfWeek + 1; // 1 = Sunday, 7 = Saturday
         $currentTime = now()->format('H:i:s'); // 00:00:00 - 23:59:59
 
         $program = Program::where('thermostat_id', $thermostat->id)
