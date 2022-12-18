@@ -37,7 +37,7 @@ jobs:
         run: composer install --prefer-dist --no-ansi --no-interaction --no-progress --quiet
 
       - name: Deploy with rsync
-        run: rsync -avz --omit-dir-times -r --exclude '.git/' ./ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PATH }}
+        run: rsync -avz --omit-dir-times -r --exclude '.git/' ./ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PATH }} -e 'ssh -v'
 
       - name: Clear cache
         run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.SSH_PATH }}; php artisan config:clear; php artisan config:cache"
