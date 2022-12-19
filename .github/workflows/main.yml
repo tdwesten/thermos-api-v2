@@ -16,7 +16,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Deploy to server
         uses: appleboy/ssh-action@master
         with:
@@ -25,6 +25,7 @@ jobs:
           port: 22
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: "cd ${{ secrets.SSH_PATH }} && ./.scripts/deploy.sh"
+          known_hosts: "just-a-placeholder-so-we-dont-get-errors"
 
       - name: Notify
         run: 'curl -X POST -H "Content-type: application/json" --data "{\"text\":\"New deployment: thermos-api.thomasvanderwesten.nl => ${{secrets.ENV_NAME}} \"}" ${{secrets.SLACK_WEBHOOK}}'
