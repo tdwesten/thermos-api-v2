@@ -18,14 +18,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Deploy to server
-        uses: appleboy/ssh-action@master
+        uses: shimataro/ssh-key-action@v3
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          port: 22
-          ssh-known-hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
-          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: "cd ${{ secrets.SSH_PATH }} && ./.scripts/deploy.sh"
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: "just-a-placeholder-so-we-dont-get-errors"
+
+      - name: run deploy.sh
+        run: cd ${{ secrets.SSH_PATH }} && ./.scripts/deploy.sh
 
       - name: Notify
         run: 'curl -X POST -H "Content-type: application/json" --data "{\"text\":\"New deployment: thermos-api.thomasvanderwesten.nl => ${{secrets.ENV_NAME}} \"}" ${{secrets.SLACK_WEBHOOK}}'
