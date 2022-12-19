@@ -23,7 +23,8 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           port: 22
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh-known-hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: "cd ${{ secrets.SSH_PATH }} && ./.scripts/deploy.sh"
 
       - name: Notify
