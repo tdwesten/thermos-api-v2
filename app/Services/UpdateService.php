@@ -170,8 +170,9 @@ class UpdateService
     /**
      * Decrease manualy the target temperature by 50
      *
-     * @param Thermostat $thermostat
-     * @return Thermostat
+     * @param Thermostat $thermostat The thermostat object.
+     *
+     * @return Thermostat A thermostat object.
      */
     public function decreaseTargetTemperature(Thermostat $thermostat): Thermostat
     {
@@ -185,6 +186,13 @@ class UpdateService
         return $thermostat;
     }
 
+    /**
+     * Reset the target temperature to the minimum temperature
+     *
+     * @param Thermostat $thermostat The thermostat object.
+     *
+     * @return Thermostat A thermostat object.
+     */
     public function reset(Thermostat $thermostat): Thermostat
     {
         $thermostat->target_temperature = $thermostat->min_temperature;
@@ -192,7 +200,10 @@ class UpdateService
 
         $thermostat->save();
 
-        $thermostat = $this->processUpdate($thermostat, $thermostat->current_temperature);
+        $thermostat = $this->processUpdate(
+            $thermostat,
+             $thermostat->current_temperature
+            );
 
         return $thermostat;
     }
