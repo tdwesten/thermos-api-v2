@@ -7,17 +7,37 @@ use App\Models\Thermostat;
 use Illuminate\Support\Carbon;
 use App\Services\ThermostatMode;
 
+/**
+ * UpdateService
+ *
+ * @category Service
+ * @package  App\Services
+ * @author   Thomas van der Westen <post@thomasvanderwesten.nl>
+ * @license  MIT https://opensource.org/licenses/MIT
+ */
 class UpdateService
 {
+    /**
+     * Process the update
+     *
+     * @param Thermostat $thermostat         The thermostat object.
+     * @param integer    $currentTemperature The current temperature.
+     *
+     * @return Thermostat
+     */
     public function processUpdate(Thermostat $thermostat, int $currentTemperature): Thermostat
     {
         $programService = new ProgramService();
         $program = $programService->getCurrentProgram($thermostat);
 
-        $thermostat->current_temperature = $currentTemperature;
+        if ($thermostat->is_active === false || $thermostat->is_active === null) {
+            return $this->useOffMode($thermostat, $currentTemperature);
+        }
 
+        $thermostat->current_temperature = $currentTemperature;
+        $timezone = new \DateTimeZone('Europe/Amsterdam');
         // Manual mode
-        if ($thermostat->last_manual_change && Carbon::parse($thermostat->last_manual_change)->diffInMinutes(now()) < 15) {
+        if ($thermostat->last_manual_change && Carbon::parse($thermostat->last_manual_change, $timezone)->diffInMinutes(now($timezone)) < 15) {
             return $this->useManualMode($thermostat, $currentTemperature);
         }
 
@@ -32,8 +52,8 @@ class UpdateService
     /**
      * Apply the default mode
      *
-     * @param Thermostat $thermostat
-     * @param integer $currentTemperature
+     * @param Thermostat $thermostat         The thermostat object.
+     * @param integer    $currentTemperature The current temperature.
      *
      * @return Thermostat
      */
@@ -41,8 +61,27 @@ class UpdateService
     {
         $thermostat->mode = ThermostatMode::Default;
         $thermostat->is_heating = $this->maybeTurnHeatingOn($currentTemperature, $thermostat->min_temperature);
+        $thermostat->current_temperature = $currentTemperature;
         $thermostat->currentProgram()->disassociate();
 
+        $thermostat->save();
+
+        return $thermostat;
+    }
+
+    /**
+     * Apply the "off" mode
+     *
+     * @param Thermostat $thermostat The thermostat object.
+     *
+     * @return Thermostat
+     */
+    public function useOffMode(Thermostat $thermostat, int $currentTemperature): Thermostat
+    {
+        $thermostat->mode = ThermostatMode::Off;
+        $thermostat->is_heating = false;
+        $thermostat->current_temperature = $currentTemperature;
+        $thermostat->currentProgram()->disassociate();
 
         $thermostat->save();
 
@@ -52,9 +91,9 @@ class UpdateService
     /**
      * Set program mode and update the thermostat based on the program
      *
-     * @param Thermostat $thermostat The thermostat object
-     * @param Program $program The program that the thermostat is currently in.
-     * @param int $currentTemperature The current temperature of the thermostat
+     * @param Thermostat $thermostat         The thermostat object.
+     * @param Program    $program            The program that the thermostat is currently in.
+     * @param int        $currentTemperature The current temperature of the thermostat
      *
      * @return Thermostat A thermostat object
      */

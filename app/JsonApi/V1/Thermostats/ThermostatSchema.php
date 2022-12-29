@@ -48,6 +48,7 @@ class ThermostatSchema extends Schema
             Str::make('mode')->readOnly(),
             BelongsTo::make('current-program')->type('programs'),
             HasMany::make('programs'),
+            Boolean::make('is-active'),
         ];
     }
 
