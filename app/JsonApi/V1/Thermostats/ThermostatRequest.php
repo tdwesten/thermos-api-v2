@@ -16,7 +16,7 @@ class ThermostatRequest extends ResourceRequest
     {
         return [
             'name' => ['required', 'string'],
-            'is-active' => [ 'boolean'],
+            'is-active' => ['boolean'],
         ];
     }
 }

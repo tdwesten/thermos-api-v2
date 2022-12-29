@@ -63,6 +63,7 @@ class UpdateService
         $thermostat->is_heating = $this->maybeTurnHeatingOn($currentTemperature, $thermostat->min_temperature);
         $thermostat->current_temperature = $currentTemperature;
         $thermostat->currentProgram()->disassociate();
+        $thermostat->target_temperature = $thermostat->min_temperature;
 
         $thermostat->save();
 
