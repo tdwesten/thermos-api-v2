@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Metric;
 use App\Models\Program;
 use App\Models\Thermostat;
+use Illuminate\Support\Facades\Log;
 
 /**
  * MetricService
@@ -34,5 +35,7 @@ class MetricService
             $metric->program()->associate($thermostat->program);
         }
         $metric->save();
+
+        Log::info('Created metric for thermostat ' . $thermostat->id);
     }
 }

@@ -6,6 +6,7 @@ use App\Models\Program;
 use App\Models\Thermostat;
 use Illuminate\Support\Carbon;
 use App\Services\ThermostatMode;
+use Illuminate\Support\Facades\Log;
 
 /**
  * UpdateService
@@ -56,6 +57,8 @@ class UpdateService
         $thermostat->current_temperature = $currentTemperature;
         $timezone = new \DateTimeZone('Europe/Amsterdam');
 
+        Log::info('Processing update for thermostat ' . $thermostat->id);
+
         // Off mode
         if ($thermostat->is_active === false || $thermostat->is_active === null) {
             return $this->useOffMode($thermostat, $currentTemperature);
@@ -94,6 +97,8 @@ class UpdateService
 
         $this->_metricService->create($thermostat);
 
+        Log::info('Thermostat ' . $thermostat->id . ' is in standby mode');
+
         return $thermostat;
     }
 
@@ -116,6 +121,8 @@ class UpdateService
         $thermostat->save();
 
         $this->_metricService->create($thermostat);
+
+        Log::info('Thermostat ' . $thermostat->id . ' is off');
 
         return $thermostat;
     }
@@ -144,6 +151,8 @@ class UpdateService
 
         $this->_metricService->create($thermostat);
 
+        Log::info('Thermostat ' . $thermostat->id . ' is in program mode');
+
         return $thermostat;
     }
 
@@ -169,6 +178,8 @@ class UpdateService
         $thermostat->save();
 
         $this->_metricService->create($thermostat);
+
+        Log::info('Thermostat ' . $thermostat->id . ' is in manual mode');
 
         return $thermostat;
     }
