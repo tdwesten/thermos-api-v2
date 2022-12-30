@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use LaravelJsonApi\Core\Exceptions\JsonApiException;
+use Sentry\Laravel\Integration;
 use Throwable;
 
 
@@ -48,5 +49,9 @@ class Handler extends ExceptionHandler
         $this->renderable(
             \LaravelJsonApi\Exceptions\ExceptionParser::make()->renderable()
         );
+
+        $this->reportable(function (Throwable $e) {
+            Integration::captureUnhandledException($e);
+        });
     }
 }

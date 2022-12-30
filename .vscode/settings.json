@@ -1,17 +1,19 @@
 {
-    "phpcs.enable": true,
-    "phpcs.standard": "PSR2",
-    "phpcs.executablePath": "vendor/bin/phpcs",
-    "phpcs.showSources": true,
-    "phpcs.showWarnings": true,
-    "phpcs.composerJsonPath": "composer.json",
-    "phpcs.trace.server": "messages",
-    "[php]": {
-        "editor.defaultFormatter": "wongjn.php-sniffer"
-    },
-    "artisan.docker.enabled": false,
-    "phpSniffer.executablesFolder": "vendor/bin",
-    "phpSniffer.autoDetect": true,
-    "phpSniffer.standard": "PSR2",
-    "i18n-ally.localesPaths": ["resources/lang"]
+  "phpcs.enable": true,
+  "phpcs.standard": "PSR2",
+  "phpcs.executablePath": "vendor/bin/phpcs",
+  "phpcs.showSources": true,
+  "phpcs.showWarnings": true,
+  "phpcs.composerJsonPath": "composer.json",
+  "phpcs.trace.server": "messages",
+  "[php]": {
+    "editor.defaultFormatter": "wongjn.php-sniffer"
+  },
+  "artisan.docker.enabled": false,
+  "phpSniffer.executablesFolder": "vendor/bin",
+  "phpSniffer.autoDetect": true,
+  "phpSniffer.standard": "PSR2",
+  "i18n-ally.localesPaths": ["resources/lang"],
+  "search.useParentIgnoreFiles": true,
+  "search.useIgnoreFiles": true
 }
