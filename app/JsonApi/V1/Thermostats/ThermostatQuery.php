@@ -5,6 +5,11 @@ namespace App\JsonApi\V1\Thermostats;
 use LaravelJsonApi\Laravel\Http\Requests\ResourceQuery;
 use LaravelJsonApi\Validation\Rule as JsonApiRule;
 
+/**
+ * Class ThermostatQuery
+ *
+ * @package App\JsonApi\V1\Thermostats
+ */
 class ThermostatQuery extends ResourceQuery
 {
 
