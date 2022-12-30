@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Metric;
 use App\Models\Program;
+use App\Models\Thermostat;
 
 /**
  * MetricService
@@ -18,24 +19,20 @@ class MetricService
     /**
      * Create metric
      *
-     * @param int     $temperature       Current temperature
-     * @param int     $targetTemperature Target temperature
-     * @param bool    $isHeating         Is heating
-     * @param Program $program           Current Program
+     * @param Thermostat $thermostat The thermostat object.
      *
      * @return array
      */
     public function create(
-        int $temperature,
-        int $targetTemperature,
-        bool $isHeating,
-        Program $program = null
+        Thermostat $thermostat,
     ): void {
         $metric = new Metric();
-        $metric->temperature = $temperature;
-        $metric->target_temperature = $targetTemperature;
-        $metric->is_heating = $isHeating;
-        $metric->program()->associate($program);
+        $metric->temperature = $thermostat->current_temperature;
+        $metric->target_temperature = $thermostat->target_temperature;
+        $metric->is_heating = $thermostat->is_heating;
+        if ($thermostat->program) {
+            $metric->program()->associate($thermostat->program);
+        }
         $metric->save();
     }
 }

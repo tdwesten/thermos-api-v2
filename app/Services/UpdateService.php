@@ -48,41 +48,31 @@ class UpdateService
      *
      * @return Thermostat
      */
-    public function processUpdate(Thermostat $thermostat, int $currentTemperature): Thermostat
-    {
+    public function processUpdate(
+        Thermostat $thermostat,
+        int $currentTemperature
+    ) : Thermostat {
         $program = $this->_programService->getCurrentProgram($thermostat);
-        $response = null;
-
-        if ($thermostat->is_active === false || $thermostat->is_active === null) {
-            $response = $this->useOffMode($thermostat, $currentTemperature);
-        }
-
         $thermostat->current_temperature = $currentTemperature;
         $timezone = new \DateTimeZone('Europe/Amsterdam');
+
+        // Off mode
+        if ($thermostat->is_active === false || $thermostat->is_active === null) {
+            return $this->useOffMode($thermostat, $currentTemperature);
+        }
+
         // Manual mode
         if ($thermostat->last_manual_change && Carbon::parse($thermostat->last_manual_change, $timezone)->diffInMinutes(now($timezone)) < 15) {
-            $response = $this->useManualMode($thermostat, $currentTemperature);
+            return $this->useManualMode($thermostat, $currentTemperature);
         }
 
         // Program mode
         if ($program) {
-            $response = $this->useProgramMode($thermostat, $program, $currentTemperature);
+            return $this->useProgramMode($thermostat, $program, $currentTemperature);
         }
 
-
-        // Fallback mode
-        if (!$response) {
-            $response = $this->useFallbackMode($thermostat, $currentTemperature);
-        }
-
-        $this->_metricService->create(
-            $response->current_temperature,
-            $response->target_temperature,
-            $response->is_heating,
-            $response->program
-        );
-
-        return $response;
+        // Stanby mode
+        return $this->useFallbackMode($thermostat, $currentTemperature);
     }
     /**
      * Apply the default mode
@@ -101,6 +91,8 @@ class UpdateService
         $thermostat->target_temperature = $thermostat->min_temperature;
 
         $thermostat->save();
+
+        $this->_metricService->create($thermostat);
 
         return $thermostat;
     }
@@ -121,8 +113,9 @@ class UpdateService
         $thermostat->is_heating = false;
         $thermostat->current_temperature = $currentTemperature;
         $thermostat->currentProgram()->disassociate();
-
         $thermostat->save();
+
+        $this->_metricService->create($thermostat);
 
         return $thermostat;
     }
@@ -149,6 +142,8 @@ class UpdateService
 
         $thermostat->save();
 
+        $this->_metricService->create($thermostat);
+
         return $thermostat;
     }
 
@@ -172,6 +167,8 @@ class UpdateService
         $thermostat->currentProgram()->disassociate();
 
         $thermostat->save();
+
+        $this->_metricService->create($thermostat);
 
         return $thermostat;
     }
