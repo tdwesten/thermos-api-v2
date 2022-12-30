@@ -19,7 +19,7 @@ use LaravelJsonApi\Eloquent\Pagination\PagePagination;
 /**
  * Class ThermostatSchema
  *
- * @package App\JsonApi\V1\Thermostats
+ * @package App\JsonApi\V1\Thermostatsdescription
  */
 class ThermostatSchema extends Schema
 {
