@@ -16,6 +16,11 @@ use LaravelJsonApi\Eloquent\Fields\Relations\BelongsTo;
 use LaravelJsonApi\Eloquent\Fields\Relations\HasMany;
 use LaravelJsonApi\Eloquent\Pagination\PagePagination;
 
+/**
+ * Class ThermostatSchema
+ *
+ * @package App\JsonApi\V1\Thermostats
+ */
 class ThermostatSchema extends Schema
 {
 
