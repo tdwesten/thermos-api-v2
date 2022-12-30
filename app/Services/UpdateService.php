@@ -18,6 +18,29 @@ use App\Services\ThermostatMode;
 class UpdateService
 {
     /**
+     * ProgramService
+     *
+     * @var ProgramService
+     */
+    private $_programService;
+
+    /**
+     * MetricService
+     *
+     * @var MetricService
+     */
+    private $_metricService;
+
+    /**
+     * UpdateService constructor.
+     */
+    public function __construct()
+    {
+        $this->_programService = new ProgramService();
+        $this->_metricService = new MetricService();
+    }
+
+    /**
      * Process the update
      *
      * @param Thermostat $thermostat         The thermostat object.
@@ -27,27 +50,39 @@ class UpdateService
      */
     public function processUpdate(Thermostat $thermostat, int $currentTemperature): Thermostat
     {
-        $programService = new ProgramService();
-        $program = $programService->getCurrentProgram($thermostat);
+        $program = $this->_programService->getCurrentProgram($thermostat);
+        $response = null;
 
         if ($thermostat->is_active === false || $thermostat->is_active === null) {
-            return $this->useOffMode($thermostat, $currentTemperature);
+            $response = $this->useOffMode($thermostat, $currentTemperature);
         }
 
         $thermostat->current_temperature = $currentTemperature;
         $timezone = new \DateTimeZone('Europe/Amsterdam');
         // Manual mode
         if ($thermostat->last_manual_change && Carbon::parse($thermostat->last_manual_change, $timezone)->diffInMinutes(now($timezone)) < 15) {
-            return $this->useManualMode($thermostat, $currentTemperature);
+            $response = $this->useManualMode($thermostat, $currentTemperature);
         }
 
         // Program mode
         if ($program) {
-            return $this->useProgramMode($thermostat, $program, $currentTemperature);
+            $response = $this->useProgramMode($thermostat, $program, $currentTemperature);
         }
 
-        // Default mode
-        return $this->useFallbackMode($thermostat, $currentTemperature);
+
+        // Fallback mode
+        if (!$response) {
+            $response = $this->useFallbackMode($thermostat, $currentTemperature);
+        }
+
+        $this->_metricService->create(
+            $response->current_temperature,
+            $response->target_temperature,
+            $response->is_heating,
+            $response->program
+        );
+
+        return $response;
     }
     /**
      * Apply the default mode
@@ -73,12 +108,15 @@ class UpdateService
     /**
      * Apply the "off" mode
      *
-     * @param Thermostat $thermostat The thermostat object.
+     * @param Thermostat $thermostat         The thermostat object.
+     * @param integer    $currentTemperature The current temperature.
      *
      * @return Thermostat
      */
-    public function useOffMode(Thermostat $thermostat, int $currentTemperature): Thermostat
-    {
+    public function useOffMode(
+        Thermostat $thermostat,
+        int $currentTemperature
+    ): Thermostat {
         $thermostat->mode = ThermostatMode::Off;
         $thermostat->is_heating = false;
         $thermostat->current_temperature = $currentTemperature;
@@ -98,8 +136,11 @@ class UpdateService
      *
      * @return Thermostat A thermostat object
      */
-    public function useProgramMode(Thermostat $thermostat, Program $program, int $currentTemperature): Thermostat
-    {
+    public function useProgramMode(
+        Thermostat $thermostat,
+        Program $program,
+        int $currentTemperature
+    ): Thermostat {
         $thermostat->mode = ThermostatMode::Program;
         $thermostat->is_heating = $this->maybeTurnHeatingOn($currentTemperature, $program->target_temperature);
         $thermostat->currentProgram()->associate($program);
@@ -112,18 +153,20 @@ class UpdateService
     }
 
     /**
-     * If the thermostat is heating, and the current temperature is greater than or equal to the target
-     * temperature, then stop heating. If the thermostat is not heating, and the current temperature is
-     * less than or equal to the target temperature, then start heating
+     * If the thermostat is heating, and the current temperature is greater than or
+     * equal to the target temperature, then stop heating. If the thermostat is not
+     * heating, and the current temperature is less than or equal to the target
+     * temperature, then start heating.
      *
-     * @param Thermostat thermostat The thermostat object
-     * @param bool isHeating true if the thermostat is currently heating, false if it's cooling
-     * @param int currentTemperature The current temperature of the room
+     * @param Thermostat $thermostat         The thermostat object
+     * @param int        $currentTemperature The current temperature of the room
      *
      * @return Thermostat The thermostat object.
      */
-    public function useManualMode(Thermostat $thermostat, int $currentTemperature): Thermostat
-    {
+    public function useManualMode(
+        Thermostat $thermostat,
+        int $currentTemperature
+    ) : Thermostat {
         $thermostat->mode = ThermostatMode::Manual;
         $thermostat->is_heating = $this->maybeTurnHeatingOn($currentTemperature, $thermostat->target_temperature);
         $thermostat->currentProgram()->disassociate();
@@ -134,16 +177,18 @@ class UpdateService
     }
 
     /**
-     * If the current temperature is higher than the target temperature, return false, otherwise
-     * return true.
+     * If the current temperature is higher than the target temperature,
+     * return false, otherwise return true.
      *
-     * @param int currentTemperature The current temperature of the room
-     * @param int targetTemperature the temperature we want to reach
+     * @param int $currentTemperature The current temperature of the room
+     * @param int $targetTemperature  The temperature we want to reach
      *
      * @return bool A boolean value.
      */
-    public function maybeTurnHeatingOn(int $currentTemperature, int $targetTemperature): bool
-    {
+    public function maybeTurnHeatingOn(
+        int $currentTemperature,
+        int $targetTemperature
+    ): bool {
         if ($currentTemperature > $targetTemperature) {
             return false;
         }
@@ -154,7 +199,8 @@ class UpdateService
     /**
      * Increase manualy the target temperature by 50
      *
-     * @param Thermostat $thermostat
+     * @param Thermostat $thermostat The thermostat object.
+     *
      * @return Thermostat
      */
     public function increaseTargetTemperature(Thermostat $thermostat): Thermostat
@@ -163,7 +209,10 @@ class UpdateService
         $thermostat->last_manual_change = now();
         $thermostat->save();
 
-        $thermostat = $this->processUpdate($thermostat, $thermostat->current_temperature);
+        $thermostat = $this->processUpdate(
+            $thermostat,
+            $thermostat->current_temperature
+        );
 
         return $thermostat;
     }
@@ -182,7 +231,10 @@ class UpdateService
 
         $thermostat->save();
 
-        $thermostat = $this->processUpdate($thermostat, $thermostat->current_temperature);
+        $thermostat = $this->processUpdate(
+            $thermostat,
+            $thermostat->current_temperature
+        );
 
         return $thermostat;
     }
@@ -203,8 +255,8 @@ class UpdateService
 
         $thermostat = $this->processUpdate(
             $thermostat,
-             $thermostat->current_temperature
-            );
+            $thermostat->current_temperature
+        );
 
         return $thermostat;
     }
