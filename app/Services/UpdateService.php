@@ -54,7 +54,7 @@ class UpdateService
         int $currentTemperature
     ) : Thermostat {
         $program = $this->_programService->getCurrentProgram($thermostat);
-        $thermostat->current_temperature = $currentTempera
+        $thermostat->current_temperature = $currentTemperature;
 
         Log::info('Processing update for thermostat ' . $thermostat->id);
 
