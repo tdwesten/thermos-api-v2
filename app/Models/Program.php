@@ -27,7 +27,9 @@ class Program extends Model
 
     protected $casts = [
         'days' => 'array',
-        'is_active' => 'boolean'
+        'is_active' => 'boolean',
+        'start_time' => 'datetime:H:i:s',
+        'end_time' => 'datetime:H:i:s',
     ];
 
     /**

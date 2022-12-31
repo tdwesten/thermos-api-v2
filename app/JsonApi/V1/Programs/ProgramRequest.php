@@ -17,8 +17,8 @@ class ProgramRequest extends ResourceRequest
     {
         return [
             'name' => ['required', 'string'],
-            'start-time' => [ 'required', 'date_format:H:i'],
-            'end-time' => [ 'required', 'date_format:H:i'],
+            'start-time' => [ 'required', 'date_format:H:i:s'],
+            'end-time' => [ 'required', 'date_format:H:i:s'],
             'is-active' => ['required', 'boolean'],
             'days' => ['required', 'array'],
             'target-temperature' => ['required', 'numeric'],
