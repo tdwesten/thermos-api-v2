@@ -31,8 +31,8 @@ class MetricService
         $metric->temperature = $thermostat->current_temperature;
         $metric->target_temperature = $thermostat->target_temperature;
         $metric->is_heating = $thermostat->is_heating;
-        if ($thermostat->program) {
-            $metric->program()->associate($thermostat->program);
+        if ($thermostat->currentProgram()) {
+            $metric->program()->associate($thermostat->currentProgram()->getResults());
         }
         $metric->save();
 
