@@ -24,7 +24,7 @@ class ProgramService
      */
     public function getCurrentProgram(Thermostat $thermostat): Program|null
     {
-        $timezone = new \DateTimeZone('Europe/Amsterdam');
+        $timezone = new \DateTimeZone($thermostat->timezone);
 
         $currentDayNumber = now($timezone)->dayOfWeek + 1;
         $currentTime = now($timezone)->format('H:i:s'); // 00:00:00 - 23:59:59

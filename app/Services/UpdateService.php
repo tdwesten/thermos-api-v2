@@ -54,8 +54,7 @@ class UpdateService
         int $currentTemperature
     ) : Thermostat {
         $program = $this->_programService->getCurrentProgram($thermostat);
-        $thermostat->current_temperature = $currentTemperature;
-        $timezone = new \DateTimeZone('Europe/Amsterdam');
+        $thermostat->current_temperature = $currentTempera
 
         Log::info('Processing update for thermostat ' . $thermostat->id);
 
@@ -65,7 +64,10 @@ class UpdateService
         }
 
         // Manual mode
-        if ($thermostat->last_manual_change && Carbon::parse($thermostat->last_manual_change, $timezone)->diffInMinutes(now($timezone)) < 15) {
+        $last_manual_change = Carbon::parse($thermostat->last_manual_change);
+        $now = Carbon::now();
+        $diff = $last_manual_change->diffInMinutes($now);
+        if ($thermostat->last_manual_change && $diff < 15) {
             return $this->useManualMode($thermostat, $currentTemperature);
         }
 
