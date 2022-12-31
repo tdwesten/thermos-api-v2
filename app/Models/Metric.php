@@ -22,6 +22,7 @@ class Metric extends Model
         'temperature',
         'target_temperature',
         'is_heating',
+        'program_id'
     ];
 
     /**
