@@ -25,6 +25,11 @@ class Thermostat extends Authenticatable implements JWTSubject, MustVerifyEmail
         'name',
         'email',
         'password',
+        'current_program_id',
+        'current_temperature',
+        'target_temperature',
+        'is_heating',
+        'is_active',
     ];
 
     /**
@@ -35,6 +40,7 @@ class Thermostat extends Authenticatable implements JWTSubject, MustVerifyEmail
     protected $hidden = [
         'password',
         'remember_token',
+        'token'
     ];
 
     /**

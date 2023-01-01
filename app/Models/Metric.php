@@ -22,7 +22,11 @@ class Metric extends Model
         'temperature',
         'target_temperature',
         'is_heating',
-        'program_id'
+        'program_id',
+        'thermostat_id',
+        'interval',
+        'created_at',
+        'updated_at'
     ];
 
     /**
@@ -40,6 +44,7 @@ class Metric extends Model
      */
     protected $casts = [
         'is_heating' => 'boolean',
+        'interval' => 'string'
     ];
 
 
@@ -54,5 +59,13 @@ class Metric extends Model
     public function program(): BelongsTo
     {
         return $this->belongsTo(Program::class, 'program_id');
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function thermostat(): BelongsTo
+    {
+        return $this->belongsTo(Thermostat::class, 'thermostat_id');
     }
 }
